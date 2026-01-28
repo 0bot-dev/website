@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>0bot — from zero to your own AI agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #050508;
+      --surface: #0c0c10;
+      --text: #f0f0f0;
+      --text-dim: #6b7280;
+      --accent: #22c55e;
+      --accent-glow: rgba(34, 197, 94, 0.4);
+      --border: #1f1f24;
+      --space: 1.25rem;
+      --pad: clamp(1.5rem, 6vw, 4rem);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'JetBrains Mono', 'SF Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 16px;
+      line-height: 1.4;
+      overflow-x: hidden;
+    }
+    .page {
+      position: relative;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      grid-template-rows: 1fr;
+      align-items: center;
+      gap: 0;
+      padding: var(--pad);
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    @media (max-width: 900px) {
+      .page { grid-template-columns: 1fr; grid-template-rows: 40vh 1fr; align-items: stretch; }
+    }
+    .hero-3d {
+      position: relative;
+      aspect-ratio: 4/3;
+      min-height: 320px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 0 80px -20px var(--accent-glow);
+    }
+    @media (max-width: 900px) { .hero-3d { min-height: 280px; aspect-ratio: 16/9; } }
+    #three-root,
+    #three-root canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .hero-3d::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, transparent 40%, rgba(5,5,8,0.6) 100%);
+      pointer-events: none;
+    }
+    .text-block {
+      padding-left: clamp(1rem, 4vw, 3rem);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      gap: var(--space);
+      position: relative;
+    }
+    @media (max-width: 900px) { .text-block { padding-left: 0; padding-top: 1.5rem; } }
+    .product-name {
+      font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.1s forwards;
+    }
+    .product-name::before { content: "> "; opacity: 0.7; }
+    .slogan {
+      font-size: clamp(2.5rem, 5.5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      background: linear-gradient(135deg, #fff 0%, #d1fae5 40%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 24px var(--accent-glow));
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.25s forwards;
+      max-width: 12ch;
+    }
+    .desc {
+      color: var(--text-dim);
+      font-size: clamp(1rem, 1.4vw, 1.15rem);
+      max-width: 26em;
+      font-weight: 400;
+      line-height: 1.5;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.45s forwards;
+    }
+    .desc::before { content: "# "; color: var(--accent); opacity: 0.6; }
+    .corner {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-color: var(--accent);
+      border-style: solid;
+      border-width: 0;
+      opacity: 0.35;
+    }
+    .corner-tl { top: -0.5rem; left: -0.5rem; border-top-width: 2px; border-left-width: 2px; }
+    .corner-br { bottom: -0.5rem; right: -0.5rem; border-bottom-width: 2px; border-right-width: 2px; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.03;
+      z-index: 1;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+  </style>
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="page">
+    <div class="hero-3d">
+      <div id="three-root"></div>
+    </div>
+    <div class="text-block">
+      <span class="corner corner-tl" aria-hidden="true"></span>
+      <span class="corner corner-br" aria-hidden="true"></span>
+      <p class="product-name">0BOT</p>
+      <h1 class="slogan">From zero to your own AI agent.</h1>
+      <p class="desc">zero-setup platform to deploy and run your personal AI agents · in development</p>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script>
+(function() {
+  const root = document.getElementById('three-root');
+  const container = root.parentElement;
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0c0c10);
+  scene.fog = new THREE.FogExp2(0x0c0c10, 0.028);
+
+  const cam = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+  cam.position.set(0, 0, 3.2);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(container.offsetWidth, container.offsetHeight);
+  root.appendChild(renderer.domElement);
+
+  const wire = new THREE.MeshBasicMaterial({
+    color: 0x22c55e,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.85
+  });
+  const torus = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.22, 32, 64), wire);
+  scene.add(torus);
+
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(0.5, 0.58, 64),
+    new THREE.MeshBasicMaterial({ color: 0x22c55e, side: THREE.DoubleSide, transparent: true, opacity: 0.25 })
+  );
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.z = -0.4;
+  scene.add(ring);
+
+  const ring2 = ring.clone();
+  ring2.material = ring2.material.clone();
+  ring2.material.opacity = 0.12;
+  ring2.scale.setScalar(1.6);
+  ring2.position.z = -0.6;
+  scene.add(ring2);
+
+  let t = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    t += 0.004;
+    torus.rotation.x = Math.sin(t * 0.7) * 0.15;
+    torus.rotation.y = t * 0.4;
+    ring.rotation.z = t * 0.2;
+    ring2.rotation.z = -t * 0.15;
+    renderer.render(scene, cam);
+  }
+
+  const ro = new ResizeObserver(function(entries) {
+    const el = entries[0].target;
+    const w = el.offsetWidth, h = el.offsetHeight;
+    cam.aspect = w / h;
+    cam.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  });
+  ro.observe(container);
+
+  animate();
+})();
+  </script>
+</body>
+</html>
