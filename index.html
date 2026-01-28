@@ -10,11 +10,13 @@
   <style>
     :root {
       --bg: #050508;
+      --bg-soft: #080a0c;
       --surface: #0c0c10;
       --text: #f0f0f0;
       --text-dim: #6b7280;
       --accent: #22c55e;
-      --accent-glow: rgba(34, 197, 94, 0.4);
+      --accent-dim: #16a34a;
+      --accent-glow: rgba(34, 197, 94, 0.35);
       --border: #1f1f24;
       --space: 1.25rem;
       --pad: clamp(1.5rem, 6vw, 4rem);
@@ -24,6 +26,8 @@
     body {
       font-family: 'JetBrains Mono', 'SF Mono', monospace;
       background: var(--bg);
+      background-image: radial-gradient(ellipse 100% 80% at 50% 20%, var(--bg-soft) 0%, transparent 55%),
+                      radial-gradient(ellipse 80% 50% at 80% 80%, rgba(34,197,94,0.04) 0%, transparent 50%);
       color: var(--text);
       min-height: 100vh;
       font-size: 16px;
@@ -35,15 +39,26 @@
       min-height: 100vh;
       display: grid;
       grid-template-columns: 1.15fr 0.85fr;
-      grid-template-rows: 1fr;
+      grid-template-rows: 1fr auto;
       align-items: center;
       gap: 0;
       padding: var(--pad);
+      padding-bottom: 0;
       max-width: 1400px;
       margin: 0 auto;
     }
     @media (max-width: 900px) {
-      .page { grid-template-columns: 1fr; grid-template-rows: 40vh 1fr; align-items: stretch; }
+      .page {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(200px, 32vh) 1fr auto;
+        gap: 1.25rem;
+        align-items: stretch;
+        padding: 1.25rem;
+        padding-bottom: 0;
+      }
+    }
+    @media (max-width: 480px) {
+      .page { grid-template-rows: minmax(180px, 28vh) 1fr auto; padding: 1rem; gap: 1rem; padding-bottom: 0; }
     }
     .hero-3d {
       position: relative;
@@ -52,9 +67,15 @@
       border-radius: 12px;
       overflow: hidden;
       border: 1px solid var(--border);
-      box-shadow: 0 0 80px -20px var(--accent-glow);
+      box-shadow: inset 0 0 60px 0 rgba(0,0,0,0.4), 0 0 40px -10px rgba(34,197,94,0.12);
     }
-    @media (max-width: 900px) { .hero-3d { min-height: 280px; aspect-ratio: 16/9; } }
+    @media (max-width: 900px) {
+      .hero-3d {
+        min-height: 0;
+        aspect-ratio: auto;
+        height: 100%;
+      }
+    }
     #three-root,
     #three-root canvas {
       display: block;
@@ -66,7 +87,7 @@
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      background: linear-gradient(135deg, transparent 40%, rgba(5,5,8,0.6) 100%);
+      background: radial-gradient(ellipse 75% 65% at 50% 45%, transparent 0%, rgba(5,5,8,0.25) 50%, rgba(5,5,8,0.85) 100%);
       pointer-events: none;
     }
     .text-block {
@@ -78,7 +99,13 @@
       gap: var(--space);
       position: relative;
     }
-    @media (max-width: 900px) { .text-block { padding-left: 0; padding-top: 1.5rem; } }
+    @media (max-width: 900px) {
+      .text-block {
+        padding-left: 0;
+        padding-top: 0;
+        justify-content: center;
+      }
+    }
     .product-name {
       font-size: clamp(0.9rem, 1.8vw, 1.1rem);
       font-weight: 600;
@@ -88,6 +115,7 @@
       opacity: 0;
       animation: fadeUp 0.6s ease 0.1s forwards;
     }
+    @media (max-width: 900px) { .product-name { font-size: 0.85rem; letter-spacing: 0.1em; } }
     .product-name::before { content: "> "; opacity: 0.7; }
     .slogan {
       font-size: clamp(2.5rem, 5.5vw, 4rem);
@@ -101,8 +129,16 @@
       filter: drop-shadow(0 0 24px var(--accent-glow));
       opacity: 0;
       animation: fadeUp 0.7s ease 0.25s forwards;
-      max-width: 12ch;
+      max-width: 14em;
     }
+    @media (max-width: 900px) {
+      .slogan {
+        font-size: clamp(1.625rem, 7vw, 2.25rem);
+        line-height: 1.15;
+        max-width: none;
+      }
+    }
+    @media (max-width: 480px) { .slogan { font-size: clamp(1.5rem, 8vw, 2rem); } }
     .desc {
       color: var(--text-dim);
       font-size: clamp(1rem, 1.4vw, 1.15rem);
@@ -112,7 +148,85 @@
       opacity: 0;
       animation: fadeUp 0.6s ease 0.45s forwards;
     }
+    @media (max-width: 900px) {
+      .desc { font-size: 0.9rem; max-width: none; }
+      .text-block { gap: 0.875rem; }
+    }
     .desc::before { content: "# "; color: var(--accent); opacity: 0.6; }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      padding: 0.35rem 0.75rem;
+      border: 1px solid rgba(34,197,94,0.25);
+      border-radius: 999px;
+      background: rgba(34,197,94,0.06);
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.55s forwards;
+    }
+    .status-pill::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+      50% { opacity: 0.8; }
+      70% { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+    }
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.7s forwards;
+    }
+    .cta-link {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+    .cta-link:hover {
+      color: var(--accent);
+      border-bottom-color: rgba(34,197,94,0.4);
+    }
+    .cta-link:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+    }
+    .divider {
+      width: 1px;
+      height: 1rem;
+      background: var(--border);
+    }
+    .footer-line {
+      grid-column: 1 / -1;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      opacity: 0.6;
+      padding: 1.25rem var(--pad);
+      margin-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    .footer-line a {
+      color: var(--text-dim);
+      text-decoration: none;
+    }
+    .footer-line a:hover { color: var(--accent); }
     .corner {
       position: absolute;
       width: 60px;
@@ -124,6 +238,9 @@
     }
     .corner-tl { top: -0.5rem; left: -0.5rem; border-top-width: 2px; border-left-width: 2px; }
     .corner-br { bottom: -0.5rem; right: -0.5rem; border-bottom-width: 2px; border-right-width: 2px; }
+    @media (max-width: 900px) {
+      .corner { width: 40px; height: 40px; }
+    }
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
@@ -149,9 +266,18 @@
       <span class="corner corner-br" aria-hidden="true"></span>
       <p class="product-name">0BOT</p>
       <h1 class="slogan">From zero to your own AI agent.</h1>
-      <p class="desc">zero-setup platform to deploy and run your personal AI agents · in development</p>
+      <p class="desc">zero-setup platform to deploy and run your personal AI agents.</p>
+      <div class="status-pill" aria-label="Status">In development</div>
+      <div class="cta-row">
+        <a class="cta-link" href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <span class="divider" aria-hidden="true"></span>
+        <a class="cta-link" href="mailto:hello@0bot.dev">Get notified</a>
+      </div>
     </div>
   </div>
+  <footer class="footer-line">
+    <a href="https://0bot.dev">0bot.dev</a>
+  </footer>
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script>
 (function() {
@@ -159,8 +285,8 @@
   const container = root.parentElement;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0c0c10);
-  scene.fog = new THREE.FogExp2(0x0c0c10, 0.028);
+  scene.background = new THREE.Color(0x070908);
+  scene.fog = new THREE.FogExp2(0x070908, 0.048);
 
   const cam = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
   cam.position.set(0, 0, 3.2);
@@ -170,26 +296,53 @@
   renderer.setSize(container.offsetWidth, container.offsetHeight);
   root.appendChild(renderer.domElement);
 
-  const wire = new THREE.MeshBasicMaterial({
+  var fogGreen = 0x0a1410;
+  var darkGreen = 0x0d2818;
+
+  var bgQuadGeo = new THREE.PlaneGeometry(20, 20);
+  var bgQuadMat = new THREE.MeshBasicMaterial({
+    color: fogGreen,
+    transparent: true,
+    opacity: 0.6,
+    depthWrite: false
+  });
+  var bgQuad = new THREE.Mesh(bgQuadGeo, bgQuadMat);
+  bgQuad.position.z = -4;
+  scene.add(bgQuad);
+
+  var glowMat = new THREE.MeshBasicMaterial({
     color: 0x22c55e,
+    transparent: true,
+    opacity: 0.06,
+    depthWrite: false
+  });
+  var glowTorus = new THREE.Mesh(new THREE.TorusGeometry(0.76, 0.24, 32, 64), glowMat);
+  scene.add(glowTorus);
+
+  const wire = new THREE.MeshBasicMaterial({
+    color: 0x1a9b4a,
     wireframe: true,
     transparent: true,
-    opacity: 0.85
+    opacity: 0.5
   });
   const torus = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.22, 32, 64), wire);
   scene.add(torus);
 
-  const ring = new THREE.Mesh(
-    new THREE.RingGeometry(0.5, 0.58, 64),
-    new THREE.MeshBasicMaterial({ color: 0x22c55e, side: THREE.DoubleSide, transparent: true, opacity: 0.25 })
-  );
+  var ringMat = new THREE.MeshBasicMaterial({
+    color: 0x1a7a3a,
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: 0.14
+  });
+  const ring = new THREE.Mesh(new THREE.RingGeometry(0.5, 0.58, 64), ringMat);
   ring.rotation.x = -Math.PI / 2;
   ring.position.z = -0.4;
   scene.add(ring);
 
   const ring2 = ring.clone();
   ring2.material = ring2.material.clone();
-  ring2.material.opacity = 0.12;
+  ring2.material.opacity = 0.07;
+  ring2.material.color.setHex(0x0d2818);
   ring2.scale.setScalar(1.6);
   ring2.position.z = -0.6;
   scene.add(ring2);
@@ -198,10 +351,12 @@
   function animate() {
     requestAnimationFrame(animate);
     t += 0.004;
-    torus.rotation.x = Math.sin(t * 0.7) * 0.15;
-    torus.rotation.y = t * 0.4;
-    ring.rotation.z = t * 0.2;
-    ring2.rotation.z = -t * 0.15;
+    torus.rotation.x = Math.sin(t * 0.7) * 0.12;
+    torus.rotation.y = t * 0.35;
+    glowTorus.rotation.x = torus.rotation.x;
+    glowTorus.rotation.y = torus.rotation.y;
+    ring.rotation.z = t * 0.18;
+    ring2.rotation.z = -t * 0.12;
     renderer.render(scene, cam);
   }
 
