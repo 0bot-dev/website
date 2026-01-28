@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 40" fill="none" aria-hidden="true">
+  <g stroke="#22c55e" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M 20 4 L 34 10 L 34 34 L 20 40 L 6 34 L 6 10 Z" stroke-width="2"/>
+    <line x1="12" y1="20" x2="16" y2="20" stroke-width="1.4"/>
+    <line x1="24" y1="20" x2="28" y2="20" stroke-width="1.4"/>
+    <line x1="14" y1="30" x2="26" y2="32" stroke-width="1.4"/>
+  </g>
+  <text x="44" y="26" font-family="JetBrains Mono, SF Mono, monospace" font-size="22" font-weight="600" fill="#f0f0f0" letter-spacing="0.02em">bot</text>
+  <text x="108" y="26" font-family="JetBrains Mono, SF Mono, monospace" font-size="14" font-weight="400" fill="#6b7280" letter-spacing="0.04em">.dev</text>
+</svg>

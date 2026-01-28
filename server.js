@@ -10,10 +10,17 @@ const MIME = {
   '.css': 'text/css',
   '.js': 'application/javascript',
   '.ico': 'image/x-icon',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
 };
 
 const server = http.createServer((req, res) => {
-  const url = req.url === '/' ? '/index.html' : req.url;
+  let url = (req.url || '/').split('?')[0];
+  if (url === '/') url = '/index.html';
+  if (url === '/favicon.ico') url = '/assets/logo-mark.svg';
   const file = path.join(ROOT, path.normalize(url).replace(/^(\.\.(\/|\\|$))+/, ''));
 
   fs.readFile(file, (err, data) => {

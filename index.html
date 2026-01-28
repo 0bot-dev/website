@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>0bot — from zero to your own AI agent</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -38,7 +39,7 @@
       position: relative;
       min-height: 100vh;
       display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
+      grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr auto;
       align-items: center;
       gap: 0;
@@ -60,34 +61,105 @@
     @media (max-width: 480px) {
       .page { grid-template-rows: minmax(180px, 28vh) 1fr auto; padding: 1rem; gap: 1rem; padding-bottom: 0; }
     }
-    .hero-3d {
+    .hero-term {
       position: relative;
       aspect-ratio: 4/3;
       min-height: 320px;
       border-radius: 12px;
       overflow: hidden;
       border: 1px solid var(--border);
-      box-shadow: inset 0 0 60px 0 rgba(0,0,0,0.4), 0 0 40px -10px rgba(34,197,94,0.12);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.4);
+      background: #1a1a1c;
+      display: flex;
+      flex-direction: column;
     }
     @media (max-width: 900px) {
-      .hero-3d {
+      .hero-term {
         min-height: 0;
         aspect-ratio: auto;
         height: 100%;
+        min-height: 260px;
       }
     }
-    #three-root,
-    #three-root canvas {
-      display: block;
-      width: 100%;
-      height: 100%;
+    .term-header {
+      flex-shrink: 0;
+      height: 36px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #2d2d2f;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    .hero-3d::after {
+    .term-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .term-dots span {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .term-dots .red { background: #ff5f57; }
+    .term-dots .yellow { background: #febc2e; }
+    .term-dots .green { background: #28c840; }
+    .term-title {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      color: #8e8e93;
+      font-weight: 400;
+    }
+    .term-body {
+      flex: 1;
+      padding: 16px 18px;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow: hidden;
+      color: #d1d1d6;
+    }
+    .term-prompt {
+      color: #34c759;
+      margin-bottom: 2px;
+    }
+    .term-prompt .user { color: #5ac8fa; }
+    .term-prompt .path { color: #af52de; }
+    .term-cmd {
+      color: #fff;
+      margin-bottom: 12px;
+    }
+    .term-out {
+      color: #8e8e93;
+      margin-bottom: 4px;
+    }
+    .term-out .ok { color: #34c759; }
+    .term-out .dim { color: #636366; }
+    .term-line {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .term-line.term-visible {
+      opacity: 1;
+    }
+    .term-line.term-prompt-first { opacity: 1; }
+    .term-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 1em;
+      background: #34c759;
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+    .hero-term::after {
       content: "";
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      background: radial-gradient(ellipse 75% 65% at 50% 45%, transparent 0%, rgba(5,5,8,0.25) 50%, rgba(5,5,8,0.85) 100%);
+      background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.2) 100%);
       pointer-events: none;
     }
     .text-block {
@@ -105,6 +177,13 @@
         padding-top: 0;
         justify-content: center;
       }
+    }
+    .brand-logo {
+      display: block;
+      height: clamp(1.75rem, 3.2vw, 2.25rem);
+      width: auto;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.1s forwards;
     }
     .product-name {
       font-size: clamp(0.9rem, 1.8vw, 1.1rem);
@@ -258,13 +337,30 @@
 <body>
   <div class="noise" aria-hidden="true"></div>
   <div class="page">
-    <div class="hero-3d">
-      <div id="three-root"></div>
+    <div class="hero-term">
+      <div class="term-header">
+        <div class="term-dots" aria-hidden="true">
+          <span class="red"></span>
+          <span class="yellow"></span>
+          <span class="green"></span>
+        </div>
+        <span class="term-title">zsh — 80×24</span>
+      </div>
+      <div class="term-body">
+        <div class="term-line term-prompt term-prompt-first"><span class="user">dev</span>@<span class="path">0bot</span> ~ %</div>
+        <div class="term-line term-cmd">0bot deploy<span class="term-cursor" aria-hidden="true"></span></div>
+        <div class="term-line term-out"><span class="ok">▶</span> Deploying agent...</div>
+        <div class="term-line term-out dim">  Checking runtime... ok</div>
+        <div class="term-line term-out dim">  Loading config... ok</div>
+        <div class="term-line term-out"><span class="ok">✓</span> Runtime ready</div>
+        <div class="term-line term-out"><span class="ok">✓</span> Bot live at https://agent.0bot.dev/abc123</div>
+        <div class="term-line term-prompt" style="margin-top:10px"><span class="user">dev</span>@<span class="path">0bot</span> ~ %</div>
+      </div>
     </div>
     <div class="text-block">
       <span class="corner corner-tl" aria-hidden="true"></span>
       <span class="corner corner-br" aria-hidden="true"></span>
-      <p class="product-name">0BOT</p>
+      <img class="brand-logo" src="assets/logo.svg" alt="0bot" width="180" height="40" />
       <h1 class="slogan">From zero to your own AI agent.</h1>
       <p class="desc">zero-setup platform to deploy and run your personal AI agents.</p>
       <div class="status-pill" aria-label="Status">In development</div>
@@ -278,98 +374,48 @@
   <footer class="footer-line">
     <a href="https://0bot.dev">0bot.dev</a>
   </footer>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script>
 (function() {
-  const root = document.getElementById('three-root');
-  const container = root.parentElement;
+  var lines = document.querySelectorAll('.term-body .term-line');
+  if (!lines.length) return;
+  var firstPrompt = 0;
+  var startIdx = 1;
+  var endIdx = lines.length - 1;
+  var lineDelay = 420;
+  var holdEnd = 2600;
+  var holdReset = 700;
 
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x070908);
-  scene.fog = new THREE.FogExp2(0x070908, 0.048);
-
-  const cam = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
-  cam.position.set(0, 0, 3.2);
-
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setSize(container.offsetWidth, container.offsetHeight);
-  root.appendChild(renderer.domElement);
-
-  var fogGreen = 0x0a1410;
-  var darkGreen = 0x0d2818;
-
-  var bgQuadGeo = new THREE.PlaneGeometry(20, 20);
-  var bgQuadMat = new THREE.MeshBasicMaterial({
-    color: fogGreen,
-    transparent: true,
-    opacity: 0.6,
-    depthWrite: false
-  });
-  var bgQuad = new THREE.Mesh(bgQuadGeo, bgQuadMat);
-  bgQuad.position.z = -4;
-  scene.add(bgQuad);
-
-  var glowMat = new THREE.MeshBasicMaterial({
-    color: 0x22c55e,
-    transparent: true,
-    opacity: 0.06,
-    depthWrite: false
-  });
-  var glowTorus = new THREE.Mesh(new THREE.TorusGeometry(0.76, 0.24, 32, 64), glowMat);
-  scene.add(glowTorus);
-
-  const wire = new THREE.MeshBasicMaterial({
-    color: 0x1a9b4a,
-    wireframe: true,
-    transparent: true,
-    opacity: 0.5
-  });
-  const torus = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.22, 32, 64), wire);
-  scene.add(torus);
-
-  var ringMat = new THREE.MeshBasicMaterial({
-    color: 0x1a7a3a,
-    side: THREE.DoubleSide,
-    transparent: true,
-    opacity: 0.14
-  });
-  const ring = new THREE.Mesh(new THREE.RingGeometry(0.5, 0.58, 64), ringMat);
-  ring.rotation.x = -Math.PI / 2;
-  ring.position.z = -0.4;
-  scene.add(ring);
-
-  const ring2 = ring.clone();
-  ring2.material = ring2.material.clone();
-  ring2.material.opacity = 0.07;
-  ring2.material.color.setHex(0x0d2818);
-  ring2.scale.setScalar(1.6);
-  ring2.position.z = -0.6;
-  scene.add(ring2);
-
-  let t = 0;
-  function animate() {
-    requestAnimationFrame(animate);
-    t += 0.004;
-    torus.rotation.x = Math.sin(t * 0.7) * 0.12;
-    torus.rotation.y = t * 0.35;
-    glowTorus.rotation.x = torus.rotation.x;
-    glowTorus.rotation.y = torus.rotation.y;
-    ring.rotation.z = t * 0.18;
-    ring2.rotation.z = -t * 0.12;
-    renderer.render(scene, cam);
+  function hideOutput() {
+    for (var i = startIdx; i <= endIdx; i++) lines[i].classList.remove('term-visible');
   }
 
-  const ro = new ResizeObserver(function(entries) {
-    const el = entries[0].target;
-    const w = el.offsetWidth, h = el.offsetHeight;
-    cam.aspect = w / h;
-    cam.updateProjectionMatrix();
-    renderer.setSize(w, h);
-  });
-  ro.observe(container);
+  function showNext(index) {
+    return new Promise(function(resolve) {
+      if (index > endIdx) { resolve(); return; }
+      lines[index].classList.add('term-visible');
+      setTimeout(resolve, lineDelay);
+    });
+  }
 
-  animate();
+  function run() {
+    hideOutput();
+    setTimeout(function loop() {
+      showNext(startIdx).then(function() { return showNext(startIdx + 1); })
+        .then(function() { return showNext(startIdx + 2); })
+        .then(function() { return showNext(startIdx + 3); })
+        .then(function() { return showNext(startIdx + 4); })
+        .then(function() { return showNext(startIdx + 5); })
+        .then(function() { return showNext(startIdx + 6); })
+        .then(function() {
+          setTimeout(function() {
+            hideOutput();
+            setTimeout(loop, holdReset);
+          }, holdEnd);
+        });
+    }, holdReset);
+  }
+
+  run();
 })();
   </script>
 </body>

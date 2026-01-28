@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#22c55e" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">
+  <!-- 0 = 六边形头部，更像助理（无天线） -->
+  <path d="M 32 10 L 52 22 L 52 46 L 32 58 L 12 46 L 12 22 Z" stroke-width="2.5"/>
+  <!-- 眼睛：横条缝 -->
+  <line x1="22" y1="30" x2="28" y2="30" stroke-width="2"/>
+  <line x1="36" y1="30" x2="42" y2="30" stroke-width="2"/>
+  <!-- 嘴：斜线（玩味） -->
+  <line x1="26" y1="46" x2="38" y2="50" stroke-width="1.8"/>
+</svg>
